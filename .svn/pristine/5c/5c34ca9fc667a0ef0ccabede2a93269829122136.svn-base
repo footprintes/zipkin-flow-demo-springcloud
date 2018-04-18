@@ -1,0 +1,65 @@
+package org.springcloud.app;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.sleuth.sampler.AlwaysSampler;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+/** 
+ * Spring could web程序主入口 
+ * @author Administrator 
+ * 
+ */  
+@SpringBootApplication
+@EnableDiscoveryClient 
+@RestController
+public class AppServer {
+
+	public static void main(String[] args) {
+		SpringApplication.run(AppServer.class, args);
+	}
+	
+	@Autowired
+	RestTemplate restTemplate;
+
+	@Bean
+	public RestTemplate getRestTemplate() {
+		return new RestTemplate();
+	}
+
+	@Bean
+	public AlwaysSampler alwaysSampler() {
+		return new AlwaysSampler();
+	}
+
+	private static final Logger LOG = Logger.getLogger(AppServer.class.getName());
+
+	@GetMapping(value = "/zipkin")
+	public String zipkinService1() {
+		LOG.info("Inside zipkinService 1..");
+
+		String response = (String) restTemplate.exchange("http://localhost:8082/zipkin2", HttpMethod.GET, null,
+				new ParameterizedTypeReference<String>() {
+				}).getBody();
+		return "Hi...";
+	}
+
+	@RequestMapping(value = "/cloud/{name}")
+	public String cloud(@PathVariable("name") String name) {
+		
+		String address = "http://127.0.0.1:9080/dubbo-consumer-web/dubbo/" + name;
+		// String address = "http://172.20.10.108:8080/brave/api";
+		String result = restTemplate.getForObject(address, String.class);
+		
+		return result;
+	}
+}

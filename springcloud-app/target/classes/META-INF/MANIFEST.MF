@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: springcloud-app
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: Lorry
+Implementation-Vendor-Id: com.neusoft.bss
+Build-Jdk: 1.8.0_102
+Implementation-URL: http://projects.spring.io/spring-boot/springcloud-
+ parent/springcloud-app/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+
